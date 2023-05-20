@@ -8,8 +8,8 @@ class ImportGcode(bpy.types.Operator, ImportHelper):
     bl_label = "Import G-code"
     bl_description = 'Imports G-code file.'
 
-    filter_glob : StringProperty(default="*.gcode", options={'HIDDEN'})
-    filename_ext = ".gcode"
+    filter_glob : StringProperty(default="*.g", options={'HIDDEN'})
+    filename_ext = ".g"
 
     layer_height : FloatProperty(
             name="Layer height",
@@ -45,8 +45,8 @@ class ImportGcode(bpy.types.Operator, ImportHelper):
         layered_gcodes=[[]]
         vertices = [[]]
 
-        pattern = re.compile(r';LAYER:|G[0|1]')
-        sub_pattern = re.compile(r'G(?P<G>[0|1])\s?[a-zA-Z0-9.]*\sX(?P<X>[0-9.]*)\sY(?P<Y>[0-9.]*)')
+        pattern = re.compile(r';layer:|G[1]')
+        sub_pattern = re.compile(r'G(?P<G>[1])\s?[a-zA-Z0-9.]*\sX(?P<X>-?[0-9.]*)\sY(?P<Y>-?[0-9.]*)')
 
         with open(self.filepath, 'r') as f:
             lines = f.readlines()
@@ -57,7 +57,7 @@ class ImportGcode(bpy.types.Operator, ImportHelper):
                     if(line[0] == ';'):
                         layered_gcodes.append([])
                     else:
-                        if re.search(r'\w*[X|Y][0-9. a-zA-z]', line):
+                        if re.search(r'\w*[X|Y]-?[0-9. a-zA-z]', line):
                             if re.search(r'E[0-9.]*', line):
                                 layered_gcodes[-1].append(line)
                             else:
@@ -72,19 +72,10 @@ class ImportGcode(bpy.types.Operator, ImportHelper):
             for j, line in enumerate(layer):
                 match = sub_pattern.search(line)
                 if match:
-                    x = round(float(match.group('X')), 3)
-                    y = round(float(match.group('Y')), 3)
+                    x = round(float(match.group('X')), 3)                
+                    y = round(float(match.group('Y')), 3)               
                     g = int(match.group('G'))
-                    if g == 0:
-                        if j+1 < len(layer):
-                            if sub_pattern.search(layer[j+1]).group('G') != '0':
-                                vertices[i].append((g, round(x, 3), round(y, 3), z))
-                        else:
-                            vertices[i].append((g, round(x, 3), round(y, 3), z))
-
-                    else:
-                        vertices[i].append((g, round(x, 3), round(y, 3), z))
-
+                    vertices[i].append((g, round(x, 3), round(y, 3), z))
             vertices.append([])
 
         count = 1
