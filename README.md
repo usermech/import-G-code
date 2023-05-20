@@ -16,13 +16,11 @@ Imports G-code files into Blender 2.80+ as a collection of layers which can then
 
 ## Usage
 **Caution: It is a computationally expensive process.**
-*Tested with Cura 4.6.2 and Blender 2.83.*
+*Tested with FlashPrint-5.5.1 and Blender 3.5.*
 
 *   Run Blender 2.80+ from command line.
 *   Specify **Layer height** and **Nozzle diameter** during file import.
 
 ![suzanne](suzanne.gif)
 
-## References
-*   [Cura](https://ultimaker.com/software/ultimaker-cura)
-*   [G-code](https://reprap.org/wiki/G-code)
+
